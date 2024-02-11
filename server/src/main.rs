@@ -1,7 +1,14 @@
-use tokio::io::{self, AsyncReadExt, AsyncWriteExt};
+mod auth;
+mod db;
+mod models;
+mod routes;
+
+use dotenv::dotenv;
+use tokio::io;
+use actix_web::{App, web::Data, HttpServer};
 use tokio::net::{TcpListener, TcpStream};
 
-async fn handle_client(mut tunnel_stream: TcpStream, target_addr: &str) -> io::Result<()> {
+async fn handle_tunnel_client(mut tunnel_stream: TcpStream, target_addr: &str) -> io::Result<()> {
     let mut target_stream = TcpStream::connect(target_addr).await?;
     let (mut tunnel_reader, mut tunnel_writer) = tunnel_stream.split();
     let (mut target_reader, mut target_writer) = target_stream.split();
@@ -15,18 +22,39 @@ async fn handle_client(mut tunnel_stream: TcpStream, target_addr: &str) -> io::R
 
 #[tokio::main]
 async fn main() -> io::Result<()> {
-    // Start the tunnel server
+    dotenv().ok();
+   
+    // Web Server
+    let pool = db::setup_database().await;
+    let actix_server = HttpServer::new(move || {
+        App::new()
+            .app_data(Data::new(pool.clone()))
+            .configure(routes::config)
+    })
+    .bind("127.0.0.1:9090")?
+    .run();
+
+    let actix_handle = tokio::spawn(async move {
+        match actix_server.await {
+            Ok(_) => println!("Actix-web server running successfully."),
+            Err(e) => eprintln!("Actix-web server failed: {}", e),
+        }
+    });
+    std::env::set_var("RUST_LOG", "debug");
+    env_logger::init();
+
+    // Tunnel Server
     let tunnel_server_handle = tokio::spawn(async {
-        let listener = TcpListener::bind("0.0.0.0:8080")
+        let listener = TcpListener::bind("0.0.0.0:8081")
             .await
             .expect("Tunnel server failed to start");
-        println!("Tunnel server running on 0.0.0.0:8080");
+        println!("Tunnel server running on 0.0.0.0:8081");
         loop {
             let (tunnel_stream, _) = listener
                 .accept()
                 .await
                 .expect("Failed to accept tunnel connection");
-            tokio::spawn(handle_client(tunnel_stream, "127.0.0.1:9090"));
+            tokio::spawn(handle_tunnel_client(tunnel_stream, "127.0.0.1:9090"));
         }
     });
 
@@ -35,6 +63,9 @@ async fn main() -> io::Result<()> {
             eprintln!("Tunnel server failed");
         }
     };
+
+    // wait for the actix-web server to finish
+    let _ = actix_handle.await;
 
     Ok(())
 }

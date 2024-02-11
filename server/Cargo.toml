@@ -1,9 +1,20 @@
 [package]
-name = "nglue"
+name = "sanctum"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+actix-files = "0.6.5"
+actix-web = "4.5.1"
+bcrypt = "0.15.0"
+dotenv = "0.15.0"
+env_logger = "0.11.1"
+jsonwebtoken = "9.2.0"
+openssl = "0.10.63"
+serde = { version = "1.0.196", features = ["derive"] }
+serde_json = "1.0.113"
+sqlx = { version = "0.7.3", features = ["sqlite", "runtime-tokio-rustls", "runtime-tokio"] }
 tokio = { version = "1.36.0", features = ["full"] }
+uuid = { version = "1.7.0", features = ["v4"] }

@@ -1,0 +1,35 @@
+:root {
+  --theme-bg-color: #0e0e0e;
+  --theme-color: #fff;
+  --theme-inactive-color: #5c5c5c;
+  --body-font: "Poppins", sans-serif;
+  --border-color: #252424;
+  --card-color: #131a1a;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100vh;
+  color: var(--theme-color);
+  font-family: var(--body-font);
+  background-color: var(--theme-bg-color);
+}
+
+.app {
+  display: flex;
+}
+
+.content-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  flex-grow: 1;
+
+  @media (max-width: 768px) {
+    margin-left: 0;
+  }
+}
