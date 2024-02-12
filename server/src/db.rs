@@ -1,25 +1,42 @@
-
+use crate::models::user::User;
+use sqlx::{sqlite::SqlitePoolOptions, SqlitePool};
 use std::env;
 use uuid::Uuid;
-use sqlx::{sqlite::SqlitePoolOptions, SqlitePool};
-use crate::models::user::User;
 
-pub async fn create_user(
+pub async fn find_user_by_id(pool: &SqlitePool, id: &str) -> Result<User, sqlx::Error> {
+    let user = sqlx::query_as!(User, "SELECT * FROM users WHERE id = ?", id)
+        .fetch_one(pool)
+        .await?;
+
+    Ok(user)
+}
+
+pub async fn find_user_by_username(pool: &SqlitePool, username: &str) -> Result<User, sqlx::Error> {
+    let user = sqlx::query_as!(User, "SELECT * FROM users WHERE username = ?", username)
+        .fetch_one(pool)
+        .await?;
+
+    Ok(user)
+}
+
+pub async fn create_user_record(
     pool: &SqlitePool,
-    email: &str,
+    username: &str,
     password_hash: &str,
 ) -> Result<User, sqlx::Error> {
+    let id = generate_uuid();
     sqlx::query!(
-        "INSERT INTO users (email, password_hash) VALUES (?, ?)",
-        email,
+        "INSERT INTO users (id, username, password_hash) VALUES (?, ?, ?)",
+        id,
+        username,
         password_hash
     )
     .execute(pool)
     .await?;
 
     Ok(User {
-        id: generate_uuid(),
-        email: email.to_owned(),
+        id: id.to_owned(),
+        username: username.to_owned(),
         password_hash: password_hash.to_owned(),
     })
 }

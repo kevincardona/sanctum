@@ -6,7 +6,7 @@ export default () => {
     const queryClient = useQueryClient();
 
     const signInMutation = useMutation<SignInResponse, unknown, SignInCredentials>(
-        ({ email, password }) => api.signIn(email, password),
+        ({ username, password }) => api.signIn(username, password),
         {
             onSuccess: (data) => {
                 localStorage.setItem('userToken', data.token);

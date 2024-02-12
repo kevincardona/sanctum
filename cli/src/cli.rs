@@ -5,7 +5,7 @@ use clap::{Parser, Subcommand};
 pub struct Args {
     #[command(subcommand)]
     pub command: Commands,
-    #[arg(short = 'c', long, value_name = "FILE", default_value = "~/.config/nglue/config.toml")]
+    #[arg(short = 'c', long, value_name = "FILE", default_value = "~/.config/sanctum/config.toml")]
     pub config: String,
 }
 
@@ -41,4 +41,7 @@ pub enum ServerCommands {
         name: String,
     },
     List,
+    // SetToken {
+    //     token: String,
+    // }
 }

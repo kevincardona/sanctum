@@ -1,13 +1,13 @@
 import { User, SignInResponse, AuthApiError } from './types';
 
-const signIn = async (email: string, password: string): Promise<SignInResponse> => {
+const signIn = async (username: string, password: string): Promise<SignInResponse> => {
     try {
         const response = await fetch('/api/v1/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ email, password }),
+            body: JSON.stringify({ username, password }),
         });
         if (!response.ok) {
             const error: AuthApiError = await response.json();

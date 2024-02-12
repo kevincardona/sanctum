@@ -1,10 +1,11 @@
+mod jwt;
 mod auth;
 mod db;
 mod models;
 mod routes;
 
-use dotenv::dotenv;
 use tokio::io;
+use dotenv::dotenv;
 use actix_web::{App, web::Data, HttpServer};
 use tokio::net::{TcpListener, TcpStream};
 
