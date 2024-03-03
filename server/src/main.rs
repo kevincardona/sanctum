@@ -2,10 +2,11 @@ mod jwt;
 mod auth;
 mod db;
 mod models;
+mod middleware;
 mod routes;
 
+use dotenvy::dotenv;
 use tokio::io;
-use dotenv::dotenv;
 use actix_web::{App, web::Data, HttpServer};
 use tokio::net::{TcpListener, TcpStream};
 
@@ -24,15 +25,15 @@ async fn handle_tunnel_client(mut tunnel_stream: TcpStream, target_addr: &str) -
 #[tokio::main]
 async fn main() -> io::Result<()> {
     dotenv().ok();
+    let pool = db::setup_database().await;
    
     // Web Server
-    let pool = db::setup_database().await;
     let actix_server = HttpServer::new(move || {
         App::new()
             .app_data(Data::new(pool.clone()))
             .configure(routes::config)
     })
-    .bind("127.0.0.1:9090")?
+    .bind("127.0.0.1:8080")?
     .run();
 
     let actix_handle = tokio::spawn(async move {

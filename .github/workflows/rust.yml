@@ -19,7 +19,7 @@ jobs:
     - name: Build Server
       run: cd server && cargo build --verbose
     - name: Run Server Tests
-      run: cd server && cargo test --verbose
+      run: cd server && ./scripts/init_db.sh && cargo test --verbose
     - name: Build CLI
       run: cd cli && cargo build --verbose
     - name: CLI Tests

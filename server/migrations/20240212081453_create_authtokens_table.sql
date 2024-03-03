@@ -1,8 +1,7 @@
--- up
 CREATE TABLE authtokens (
-    id INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id TEXT NOT NULL,
     token TEXT NOT NULL UNIQUE,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    expires_at TIMESTAMP NOT NULL,
+    expires_at INTEGER NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );

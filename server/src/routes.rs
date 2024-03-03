@@ -9,7 +9,7 @@ pub fn config(cfg: &mut web::ServiceConfig) {
             .service(login_user)
             .service(is_authenticated),
     );
-    cfg.service(fs::Files::new("/", "./build").show_files_listing());
+    cfg.service(fs::Files::new("/", "../ui/build").show_files_listing());
     cfg.default_service(web::route().to(index));
 }
 
